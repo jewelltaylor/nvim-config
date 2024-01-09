@@ -45,15 +45,15 @@ P.S. You can delete this when you're done too. It's your config now :)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
--- Set encoding option and font variable for nvim-tree (must occur before nvim-tree setup)
+-- Set encoding option and font variable for nvim-tree (must occur befor nvim-tree setup) 
 vim.opt.encoding = "utf-8"
 vim.g.airline_powerline_fonts = 1
 
--- Set relative line numbers
-vim.opt.encoding = "utf-8"
+-- set relative line numbers 
+vim.opt.relativenumber = true
 
 -- sync clipboard with os 
-vim.o.clipboard = 'understand'
+vim.opt.clipboard = 'unnamedplus'
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    https://github.com/folke/lazy.nvim
@@ -135,6 +135,39 @@ require('lazy').setup({
       'rafamadriz/friendly-snippets',
     },
   },
+  {
+    -- LSP Configuration & Plugins
+    'neovim/nvim-lspconfig',
+    dependencies = {
+      -- Automatically install LSPs to stdpath for neovim
+      'williamboman/mason.nvim',
+      'williamboman/mason-lspconfig.nvim',
+
+      -- Useful status updates for LSP
+      -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
+      { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
+
+      -- Additional lua configuration, makes nvim stuff amazing!
+      'folke/neodev.nvim',
+    },
+  },
+
+  {
+    -- Autocompletion
+    'hrsh7th/nvim-cmp',
+    dependencies = {
+      -- Snippet Engine & its associated nvim-cmp source
+      'L3MON4D3/LuaSnip',
+      'saadparwaiz1/cmp_luasnip',
+
+      -- Adds LSP completion capabilities
+      'hrsh7th/cmp-nvim-lsp',
+
+      -- Adds a number of user-friendly snippets
+      'rafamadriz/friendly-snippets',
+    },
+  },
+
 
   -- Useful plugin to show you pending keybinds.
   { 'folke/which-key.nvim', opts = {} },
@@ -589,7 +622,7 @@ require('mason-lspconfig').setup()
 local servers = {
   -- clangd = {},
   -- gopls = {},
-  -- pyright = {},
+  pyright = {},
   -- rust_analyzer = {},
   -- tsserver = {},
   -- html = { filetypes = { 'html', 'twig', 'hbs'} },
@@ -680,6 +713,31 @@ cmp.setup {
     { name = 'path' },
   },
 }
+
+local lspconfig = require('lspconfig')
+lspconfig.pylsp.setup{
+  settings = {
+    pylsp = {
+      configurationSources = {"flake8"},
+      plugins = {
+        pycodestyle = {
+          enabled = false
+        },
+        mccabe = {
+          enabled = false
+        },
+        pyflakes = {
+          enabled = false
+        },
+        flake8 = {
+          enabled = true
+        }
+      }
+    }
+  }
+}
+
+vim.cmd [[autocmd BufWritePre *.py lua vim.lsp.buf.format({ async = true })]]
 
 -- disable netrw at the very start of your init.lua
 vim.g.loaded_netrw = 1
