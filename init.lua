@@ -167,6 +167,26 @@ require('lazy').setup({
       'rafamadriz/friendly-snippets',
     },
   },
+  {
+    -- GitHub Copilot plugin
+    'zbirenbaum/copilot.lua',
+    cmd = 'Copilot',
+    event = 'InsertEnter',
+    config = function()
+      require('copilot').setup({
+        suggestion = { enabled = false },
+        panel = { enabled = false },
+      })
+    end,
+  },
+  {
+    -- Integration with nvim-cmp
+    'zbirenbaum/copilot-cmp',
+    dependencies = { 'copilot.lua' },
+    config = function()
+      require('copilot_cmp').setup()
+    end,
+  },
 
 
   -- Useful plugin to show you pending keybinds.
@@ -711,6 +731,7 @@ cmp.setup {
     { name = 'nvim_lsp' },
     { name = 'luasnip' },
     { name = 'path' },
+    { name = 'copilot' },
   },
 }
 
